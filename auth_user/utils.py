@@ -1,10 +1,10 @@
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from database import db_dependency
-from jose import jwt, JWTError
+from jose import jwt, JWTError, ExpiredSignatureError
 from fastapi.security import OAuth2PasswordBearer
 from datetime import timedelta, timezone, datetime
-from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, REFRESH_SECRET_KEY
+from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS, REFRESH_SECRET_KEY, RESET_SECRET_KEY, RESET_TOKEN_EXPIRE_MINUTES
 from auth_user.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -29,17 +29,34 @@ def create_refresh_token(data: dict,expires_days: int = REFRESH_TOKEN_EXPIRE_DAY
     return jwt.encode(data,REFRESH_SECRET_KEY, ALGORITHM)
 
 
-def get_current_user(db:db_dependency ,token: str = Depends(oauth2_scheme)):
-    print("hello")
+def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
-    email = payload.get("sub")
-    if not email:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            raise credentials_exception
+        user = db.query(User).filter(User.email == email).first()
+        if user is None:
+            raise credentials_exception
+        return user
+
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired. Please log in again.")
+    except JWTError:
         raise credentials_exception
-    user = db.query(User).filter(User.email==email).first()
-    if user is None:
-        raise credentials_exception
-    return user
     
+def create_password_reset_token(data:dict):
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp":expire})
+    return jwt.encode(to_encode, RESET_SECRET_KEY, algorithm=ALGORITHM)
 
+
+def verify_password_reset_token(token:str):
+    try:
+        payload = jwt.decode(token, RESET_SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except JWTError:
+        return None

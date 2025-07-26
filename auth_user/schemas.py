@@ -1,10 +1,11 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 
 class UserCreate(BaseModel):
     email: EmailStr
     password : str
     full_name : Optional[str] = None
+    role: Optional[str] = "Employee"
 
 class UserOut(BaseModel):
     id : str
@@ -30,3 +31,17 @@ class UpdateRole(BaseModel):
     full_name: Optional[str]=None
     role : Optional[str]=None
     
+class PaginatedUsers(BaseModel):
+    total : int
+    users : List[UserOut]
+
+
+class PasswordResetReq(BaseModel):
+    email: EmailStr
+
+class PasswordReset(BaseModel):
+    token: str
+    new_password: str
+    
+class InviteRequest(BaseModel):
+    email : EmailStr
