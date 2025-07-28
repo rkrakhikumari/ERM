@@ -38,6 +38,8 @@ def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme)):
         if not email:
             raise credentials_exception
         user = db.query(User).filter(User.email == email).first()
+        if not user.is_active:
+            raise HTTPException(status_code=403, detail="User is inactive")
         if user is None:
             raise credentials_exception
         return user
