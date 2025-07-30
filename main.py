@@ -7,6 +7,10 @@ from payroll import models as payroll_models
 from payroll import routes as payroll_routes
 from leave.routes import router as leave_router
 from leave import models as leave_models
+from assets import models as asset_models
+from assets.routes import router as asset_router
+from performance import models as performance_models
+from performance.routes import router as performance_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -20,4 +24,7 @@ app.include_router(atndnce_routes.router)
 app.include_router(timesheet_routes.router)
 app.include_router(payroll_routes.router)
 app.include_router(leave_router)
+app.include_router(asset_router)
+app.include_router(performance_router)
+
 
