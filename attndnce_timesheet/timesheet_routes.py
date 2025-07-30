@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
 from auth_user.utils import get_current_user
 from .schemas import TimeSheetSubmit, TimeSheetOut
 from database import db_dependency

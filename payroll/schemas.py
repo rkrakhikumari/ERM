@@ -6,8 +6,8 @@ class SalaryStructureCreate(BaseModel):
     employee_id : int
     basic : float
     hra : float
-    bonus : float
-    deduction : float
+    bonus : Optional[float] = 0.0
+    deduction : Optional[float] = 0.0
 
 class SalaryStructureOut(SalaryStructureCreate):
     id: int
@@ -22,5 +22,7 @@ class PayrollOut(BaseModel):
     total_deductions: float
     net_pay : float
     is_paid : bool
+    payslip_path: Optional[str] = None
+
 
     

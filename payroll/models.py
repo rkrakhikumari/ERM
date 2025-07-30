@@ -9,7 +9,7 @@ class SalaryStructure(Base):
     employee_id = Column(Integer, ForeignKey("employees.id"))
     basic = Column(Float)
     hra = Column(Float)
-    bonus = Column()
+    bonus = Column(Float, default = 0.0)
     deduction = Column(Float)
 
 
@@ -24,3 +24,4 @@ class Payroll(Base):
     total_deductions = Column(Float)
     net_pay = Column(Float)
     is_paid = Column(Boolean, default=False)
+    payslip_path = Column(String, nullable=True)
