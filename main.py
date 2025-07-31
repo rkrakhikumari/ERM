@@ -7,6 +7,11 @@ from payroll import models as payroll_models
 from payroll import routes as payroll_routes
 from leave.routes import router as leave_router
 from leave import models as leave_models
+from project_team import models as project_models
+from project_team.routes import router as project_router
+from project_team.teams_routes import router as team_router
+from notification import models as notif_model
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -20,4 +25,6 @@ app.include_router(atndnce_routes.router)
 app.include_router(timesheet_routes.router)
 app.include_router(payroll_routes.router)
 app.include_router(leave_router)
+app.include_router(project_router)
+app.include_router(team_router)
 
