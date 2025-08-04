@@ -12,7 +12,8 @@ from project_team.routes import router as project_router
 from project_team.teams_routes import router as team_router
 from notification import models as notif_model
 from notification import routes as notif_router
-
+from admin import routes as admin_router
+from admin import models as admin_models
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,5 +29,6 @@ app.include_router(leave_router)
 app.include_router(project_router)
 app.include_router(team_router)
 app.include_router(notif_router.router)
+app.include_router(admin_router.router)
 
 

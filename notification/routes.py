@@ -1,26 +1,22 @@
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from typing import List
-
-from . import schemas, crud
-from database import get_db
+from .schemas import  NotificationCreate, NotificationOut
+from .crud import get_user_notification
+from database import db_dependency
 from auth_user.utils import get_current_user  
 from celery_worker import send_notification_task
 from .websocket_manager import manager
 
-router = APIRouter(
-    prefix="/notifications",
-    tags=["Notifications"]
-)
+router = APIRouter(prefix="/notifications",tags=["Notifications"])
 
-@router.get("/me", response_model=List[schemas.NotificationOut])
-def get_my_notifications(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    return crud.get_user_notifications(db, current_user["id"])
+@router.get("/me", response_model=List[NotificationOut])
+def get_my_notifications(db: db_dependency, current_user: dict = Depends(get_current_user)):
+    return get_user_notification(db, current_user["id"])
 
 @router.post("/send", status_code=202)
-def send_notification(payload: schemas.NotificationCreate):
-    send_notification_task.delay(payload.dict())
+def send_notification(payload: NotificationCreate):
+    send_notification_task.delay(payload.model_dump())
     return JSONResponse(content={"message": "Notification queued"}, status_code=202)
 
 @router.websocket("/ws/notifications")
@@ -28,6 +24,6 @@ async def websocket_notifications(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()  # Keep alive
+            await websocket.receive_text() 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
