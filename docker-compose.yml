@@ -37,7 +37,7 @@ services:
     container_name: db
     restart: always
     environment:
-      POSTGRES_USER: postgre
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234567
       POSTGRES_DB: erm_db
     ports:
