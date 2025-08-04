@@ -17,5 +17,5 @@ def send_notification_task(data: dict):
     notif = crud.create_notification(db, NotificationCreate(**data))
     import asyncio
     loop = asyncio.get_event_loop()
-    loop.create_task(manager.broadcast(f"🔔 {notif.title}: {notif.message}"))
+    loop.create_task(manager.broadcast(f"{notif.title}: {notif.message}"))
     return True
