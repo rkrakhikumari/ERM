@@ -8,12 +8,15 @@ def get_global_settings(db: Session):
     return db.query(GlobalSettings).first()
 
 def update_global_settings(db: Session, update: dict):
+    allowed_fields = {"working_hours", "leave_policy", "access_control_policy"}
+
     settings = db.query(GlobalSettings).first()
     if not settings:
         settings = GlobalSettings()
         db.add(settings)
     for key, value in update.items():
-        setattr(settings, key, value)
+        if key in allowed_fields:
+            setattr(settings, key, value)
     db.commit()
     return settings
 

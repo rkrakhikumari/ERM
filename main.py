@@ -35,10 +35,6 @@ app.include_router(project_router)
 app.include_router(team_router)
 app.include_router(notif_router.router)
 app.include_router(admin_router.router)
-
-
-app.include_router(payroll_routes.router)
-app.include_router(leave_router)
 app.include_router(asset_router)
 app.include_router(performance_router)
 

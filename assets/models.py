@@ -6,16 +6,16 @@ class Assets(Base):
     __tablename__="assets"
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    type = Column(String)
-    serial_number = Column(String, unique=True)
-    assigned_to = Column(Integer, ForeignKey("employees.id"))
-    assigned_on = Column(DateTime)
+    type = Column(String, nullable=False)
+    serial_number = Column(String, unique=True,nullable=False)
+    assigned_to = Column(Integer, ForeignKey("employees.id"), index=True)
+    assigned_on = Column(DateTime,default=datetime.now(timezone.utc))
     returned = Column(Boolean, default=False)
 
 class AssetRequest(Base):
     __tablename__="asset_requests"
     id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, nullable=False)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)  # FK added
     asset_type = Column(String, nullable=False)
     reason = Column(String)
 

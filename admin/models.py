@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Text, DateTime
+from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from database import Base
 
@@ -12,7 +12,7 @@ class GlobalSettings(Base):
 class AuditLog(Base):
     __tablename__ = "audit_log"
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
-    action = Column(String)
-    timestamp = Column(DateTime, default=func.now())
+    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    action = Column(String, index=True)
+    timestamp = Column(DateTime, default=func.now(), index=True)
 
