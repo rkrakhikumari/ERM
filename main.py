@@ -14,10 +14,6 @@ from notification import models as notif_model
 from notification import routes as notif_router
 from admin import routes as admin_router
 from admin import models as admin_models
-from payroll import models as payroll_models
-from payroll import routes as payroll_routes
-from leave.routes import router as leave_router
-from leave import models as leave_models
 from assets import models as asset_models
 from assets.routes import router as asset_router
 from performance import models as performance_models
