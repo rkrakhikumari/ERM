@@ -7,12 +7,13 @@ from database import db_dependency
 from auth_user.utils import get_current_user  
 from celery_worker import send_notification_task
 from .websocket_manager import manager
+from auth_user.models import User
 
 router = APIRouter(prefix="/notifications",tags=["Notifications"])
 
 @router.get("/me", response_model=List[NotificationOut])
-def get_my_notifications(db: db_dependency, current_user: dict = Depends(get_current_user)):
-    return get_user_notification(db, current_user["id"])
+def get_my_notifications(db: db_dependency, current_user: User = Depends(get_current_user)):
+    return get_user_notification(db, current_user.id)
 
 @router.post("/send", status_code=202)
 def send_notification(payload: NotificationCreate):

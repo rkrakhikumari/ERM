@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from notification import crud
 from notification.schemas import NotificationCreate
-from notification.websocket_manager import manager
 
 celery_app = Celery(
     "notification_tasks",
@@ -14,8 +13,11 @@ celery_app = Celery(
 @celery_app.task
 def send_notification_task(data: dict):
     db: Session = SessionLocal()
-    notif = crud.create_notification(db, NotificationCreate(**data))
-    import asyncio
-    loop = asyncio.get_event_loop()
-    loop.create_task(manager.broadcast(f"{notif.title}: {notif.message}"))
-    return True
+    try:
+        notif = crud.create_notification(db, NotificationCreate(**data))
+        
+        return {"status": "success", "notification_id": notif.id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
