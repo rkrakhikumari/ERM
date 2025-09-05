@@ -21,7 +21,6 @@ const processQueue = (error, token = null) => {
   failedQueue = [];
 };
 
-//add the token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -35,16 +34,13 @@ api.interceptors.request.use(
   }
 );
 
-//  for handling token expiration and refreshing
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const originalRequest = error.config;
 
-    // Check if the error is 401 and if it's not a refresh token request
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        // If already refreshing, add the new request to the queue
         return new Promise(function(resolve, reject) {
           failedQueue.push({ resolve, reject });
         }).then(token => {

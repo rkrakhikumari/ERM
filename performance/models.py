@@ -19,20 +19,19 @@ class PerformanceCycle(Base):
 class Goal(Base):
     __tablename__ = "goals"
     id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer,ForeignKey("employees.id"),nullable=False)
-    cycle_id = Column(Integer, ForeignKey("performance_cycles.id"))
+    employee_id = Column(Integer,ForeignKey("employees.id", ondelete="CASCADE"),nullable=False)
+    cycle_id = Column(Integer, ForeignKey("performance_cycles.id", ondelete="CASCADE"))
     title = Column(String)
     description = Column(Text)
     weight = Column(Float)
     created_at = Column(DateTime,  default=datetime.now(timezone.utc))
-
 
 class Feedback(Base):
     __tablename__ = "feedbacks"
     id = Column(Integer, primary_key=True)
     reviewer_id = Column(Integer, nullable=False)
     employee_id = Column(Integer, nullable=False)
-    cycle_id = Column(Integer, ForeignKey("performance_cycles.id"))
+    cycle_id = Column(Integer, ForeignKey("performance_cycles.id", ondelete="CASCADE"))
     role = Column(String)
     comments = Column(Text)
     rating = Column(Float)

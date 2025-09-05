@@ -1,9 +1,9 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy.orm import Session # type: ignore
+from sqlalchemy import select # type: ignore
 from .models import Employee, History
 from .schemas import EmployeeCreate, EmployeeUpdate
 from datetime import date
-
+from payroll.models import SalaryStructure
 
 def create_employee(db: Session, employee_data: EmployeeCreate):
     new_employee = Employee(**employee_data.model_dump())
@@ -42,13 +42,21 @@ def update_employees(db: Session, employee_id : int, updates: EmployeeUpdate):
     db.commit()
     return employee
 
-def delete_employees(db:Session, employee_id: int):
+def delete_employees(db: Session, employee_id: int):
+    subordinates = db.query(Employee).filter(Employee.manager_id == employee_id).all()
+    for emp in subordinates:
+        emp.manager_id = None
+
+    db.query(SalaryStructure).filter(SalaryStructure.employee_id == employee_id).delete()
+
     employee = db.query(Employee).filter(Employee.id == employee_id).first()
-    if not employee:
-        return None
-    db.delete(employee)
-    db.commit()
-    return True
+    if employee:
+        db.delete(employee)
+        db.commit()
+        return True
+    return False
+
+
 
 def get_employe_history(db: Session, employee_id: int):
     return db.query(History).filter(History.employee_id == employee_id).all()

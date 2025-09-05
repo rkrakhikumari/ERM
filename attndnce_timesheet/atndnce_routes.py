@@ -23,9 +23,8 @@ def my_attendance(db: db_dependency, user=Depends(get_current_user)):
 def manual_entry(entry: ManualEntryRequest,db: db_dependency, user= Depends(get_current_user)):
     return request_manual_entry(db, user.id, entry)
 
-@router.get('/logs')
+@router.get('/logs', response_model=List[AttendanceOut])
 def attendance_logs(db: db_dependency, user = Depends(get_current_user)):
     if user.role.lower() not in ["admin","hr"]:
         raise HTTPException(status_code=403, detail="Acess denied")
     return get_all_logs(db)
-

@@ -3,7 +3,6 @@ import axios from 'axios';
 import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import Illustration from '../assets/register.svg'; 
-
 const Register = () => {
   const [formData, setFormData] = useState({
     email: '',

@@ -1,13 +1,11 @@
-// src/components/Performance/CreateReviewCycle.js
 import React, { useState } from 'react';
-// Assuming your API client is configured to the correct base URL
-import api from '../../api/api'; // Adjust path as necessary if your api.js is elsewhere
+import api from '../../api/api'; 
 
 const CreateReviewCycle = () => {
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [status, setStatus] = useState(null); // 'success' or 'error'
+  const [status, setStatus] = useState(null); 
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -24,14 +22,13 @@ const CreateReviewCycle = () => {
         end_date: endDate,
       });
 
-      if (response.status === 200) { // Assuming 200 OK for success
+      if (response.status === 200) {
         setStatus('success');
         setMessage(`Review cycle "${response.data.name}" started successfully!`);
         setName('');
         setStartDate('');
         setEndDate('');
       } else {
-        // Handle other successful but non-200 responses if necessary
         setStatus('error');
         setMessage(`Unexpected response status: ${response.status}`);
       }

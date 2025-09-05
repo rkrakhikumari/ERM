@@ -14,7 +14,7 @@ const ReviewSummary = () => {
     }
     setLoading(true);
     setError('');
-    setSummary(null); // Clear previous summary
+    setSummary(null); 
     try {
       const response = await api.get(`/reviews/summary/${employeeId}`);
       setSummary(response.data);

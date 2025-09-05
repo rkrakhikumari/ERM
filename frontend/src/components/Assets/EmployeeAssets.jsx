@@ -4,7 +4,6 @@ import { MdOutlineComputer } from "react-icons/md";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
-
 export default function EmployeeAssets() {
   const { employeeId } = useParams();
   const [assignedAssets, setAssignedAssets] = useState([]);

@@ -333,9 +333,7 @@ export default function ProjectAssignment() {
                 </button>
               </div>
 
-              {/* Tab Content based on selected tab */}
               <div className="space-y-4">
-                {/* Direct Members Tab Content */}
                 {selectedTab === "direct" && (
                   <ul className="list-none space-y-2">
                     {projectMembers?.direct_members?.length > 0 ? (
@@ -400,7 +398,6 @@ export default function ProjectAssignment() {
                               </span>
                             </div>
                           </div>
-                          {/* Only allow removal for directly assigned members */}
                           {member.assignment_type === 'direct' && (
                             <button
                               className="text-red-400 hover:text-red-600 transition-colors cursor-pointer"

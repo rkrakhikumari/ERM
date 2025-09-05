@@ -25,7 +25,6 @@ class FeedBackCreate(BaseModel):
     role : str
     comments : str
     rating : float
-
 class FeedBackSummary(BaseModel):
     employee_id : int
     average_rating : float

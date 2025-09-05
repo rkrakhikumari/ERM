@@ -160,7 +160,6 @@ const MyAttendance = () => {
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Clock In</th>
                                         <th className="py-3 px-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Clock Out</th>
-                                        {/* <th className="py-3 px-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th> */}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-800">

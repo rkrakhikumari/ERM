@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, Boolean, Date, ForeignKey , Enum
 from database import Base
 import enum
-
 class LeaveType(enum.Enum):
     sick = "sick"
     casual = "casual"
@@ -16,14 +15,13 @@ class LeaveStatus(str, enum.Enum):
 class LeaveRequest(Base):
     __tablename__ = "leave_requests"
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer,ForeignKey("employees.id"))
+    employee_id = Column(Integer,ForeignKey("employees.id", ondelete="CASCADE"))
     start_date = Column(Date)
     end_date = Column(Date)
     leave_type = Column(Enum(LeaveType))
     reason = Column(String)
     status = Column(Enum(LeaveStatus), default=LeaveStatus.pending)
     approver_level = Column(String, default="manager")
-
 
 class Holiday(Base):
     __tablename__ = "holidays"

@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     role: Optional[str] = "Employee"
 
 class UserOut(BaseModel):
-    id: str
+    id: int
     email: EmailStr
     full_name: Optional[str]
     role: str
@@ -43,3 +43,9 @@ class PasswordReset(BaseModel):
 
 class InviteRequest(BaseModel):
     email: EmailStr
+
+class AdminUpdateRole(BaseModel):
+    role: Optional[str] = None
+
+class UpdateOwnProfile(BaseModel):
+    full_name: Optional[str] = None

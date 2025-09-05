@@ -15,18 +15,15 @@ export default function UpdateProfileForm({ onClose }) {
     setMessage("");
     setError("");
 
-    // Prepare the payload based on the user's role
     let payload = {
       full_name: fullName,
     };
 
-    // Only allow an Admin to update the role field
     if (user.role === "Admin") {
       payload.role = role;
     }
 
     try {
-      // Use the 'api' instance here
       const response = await api.put("/users/me", payload);
       setUser(response.data);
       setMessage("Profile updated successfully!");
@@ -58,7 +55,6 @@ export default function UpdateProfileForm({ onClose }) {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-purple-500 focus:border-purple-500"
             />
           </div>
-          {/* Only render the role dropdown if the user is an Admin */}
           {user.role === "Admin" && (
             <div>
               <label className="block text-sm font-medium text-gray-700">Role</label>

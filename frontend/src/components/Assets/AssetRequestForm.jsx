@@ -62,7 +62,7 @@ export default function AssetRequestForm() {
   return (
     <div className="max-w-xl mx-auto p-8 bg-[#0D1117] min-h-screen font-sans text-white">
       <div className="bg-[#161B22] border border-white/20 rounded-2xl p-8 shadow-lg">
-        {/* Header with button */}
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold text-gray-200">
             Asset Request Form

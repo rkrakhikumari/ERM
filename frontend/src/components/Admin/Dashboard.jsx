@@ -52,7 +52,7 @@ export default function Dashboard() {
           <button
             key={button.to}
             onClick={() => navigate(button.to)}
-            className="flex items-center gap-3 px-6 py-3 text-base font-semibold bg-[#161B22] border border-white/20 rounded-xl transition-all duration-300 hover:border-[#3B82F6] hover:bg-[#3B82F6]/20 hover:text-[#3B82F6] hover:-translate-y-0.5"
+            className="flex items-center gap-3 px-6 py-3 text-base font-semibold bg-[#161B22] border border-white/20 rounded-xl transition-all duration-300 hover:border-[#3B82F6] hover:bg-[#3B82F6]/20 hover:text-[#3B82F6] hover:-translate-y-0.5 cursor-pointer"
           >
             <div className="text-lg">{button.icon}</div>
             {button.title}

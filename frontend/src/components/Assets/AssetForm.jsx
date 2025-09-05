@@ -3,7 +3,6 @@ import api from "../../api/api";
 import { GoCheckCircleFill } from "react-icons/go";
 import { MdOutlineKeyboardReturn } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
 export default function AssetForm() {
   const [formData, setFormData] = useState({
     name: "",

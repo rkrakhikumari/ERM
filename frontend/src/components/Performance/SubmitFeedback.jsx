@@ -28,7 +28,6 @@ const SubmitFeedback = () => {
         try {
             const payload = {
                 ...formData,
-                // Automatically set the reviewer_id to the logged-in user's ID
                 reviewer_id: user.id,
                 employee_id: parseInt(formData.employee_id),
                 cycle_id: parseInt(formData.cycle_id),
@@ -61,7 +60,7 @@ const SubmitFeedback = () => {
                 <div>
                     <label htmlFor="employee_id" className="block text-sm font-medium text-gray-300 mb-2">Employee ID for Feedback</label>
                     <input
-                        type="text" // Changed from "number" to "text"
+                        type="text" 
                         id="employee_id"
                         name="employee_id"
                         value={formData.employee_id}
@@ -75,7 +74,7 @@ const SubmitFeedback = () => {
                 <div>
                     <label htmlFor="cycle_id" className="block text-sm font-medium text-gray-300 mb-2">Cycle ID</label>
                     <input
-                        type="text" // Changed from "number" to "text"
+                        type="text" 
                         id="cycle_id"
                         name="cycle_id"
                         value={formData.cycle_id}
@@ -118,7 +117,7 @@ const SubmitFeedback = () => {
                 <div>
                     <label htmlFor="rating" className="block text-sm font-medium text-gray-300 mb-2">Rating (1-5)</label>
                     <input
-                        type="text" // Changed from "number" to "text"
+                        type="text" 
                         id="rating"
                         name="rating"
                         value={formData.rating}

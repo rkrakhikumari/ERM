@@ -16,7 +16,7 @@ const ExportReview = () => {
 
     try {
       const response = await api.get(`/reviews/export?employee_id=${employeeId}`, {
-        responseType: 'blob', // Important for handling binary data like PDFs
+        responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -45,7 +45,7 @@ const ExportReview = () => {
           <div className="flex-1">
             <label htmlFor="employeeId" className="block text-sm font-medium text-gray-300 mb-2">Employee ID</label>
             <input 
-              type="text" // Changed from "number" to "text"
+              type="text" 
               id="employeeId" 
               value={employeeId} 
               onChange={(e) => setEmployeeId(e.target.value)}

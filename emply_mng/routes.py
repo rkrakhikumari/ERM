@@ -3,13 +3,22 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import SessionLocal, db_dependency
 from .schemas import *
+from notification.tasks import trigger_notification
 from .utils import create_employee, get_all_employees, get_employees, update_employees, delete_employees, get_employe_history
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
 
 @router.post("/", response_model=EmployeeOut)
 def add_employee(data: EmployeeCreate, db: db_dependency):
-    return create_employee(db, data)
+    employee = create_employee(db, data)
+
+    admin_id = 3 
+    trigger_notification.delay(
+        user_id=admin_id,
+        title="New Employee Added",
+        message=f"{employee.name} has been added to employees"
+    )
+    return employee
 
 @router.get("/", response_model=List[EmployeeOut])
 def list_employees(db: db_dependency, department: Optional[str]=None, status: Optional[str]=None):
@@ -39,6 +48,4 @@ def delete_employee(employee_id: int, db: db_dependency):
 @router.get("/{employee_id}/history", response_model=List[HistoryOut])
 def get_history(employee_id: int, db:db_dependency):
     history = get_employe_history(db, employee_id)
-    if not history:
-        raise HTTPException(status_code=404, detail="no history found for this employe")
     return history

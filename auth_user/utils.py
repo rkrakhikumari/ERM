@@ -4,11 +4,7 @@ from database import db_dependency
 from jose import jwt, JWTError, ExpiredSignatureError # type: ignore
 from fastapi.security import OAuth2PasswordBearer # type: ignore
 from datetime import timedelta, timezone, datetime
-from config import (
-    SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,
-    REFRESH_TOKEN_EXPIRE_DAYS, REFRESH_SECRET_KEY,
-    RESET_SECRET_KEY, RESET_TOKEN_EXPIRE_MINUTES
-)
+from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES,REFRESH_TOKEN_EXPIRE_DAYS, REFRESH_SECRET_KEY,RESET_SECRET_KEY, RESET_TOKEN_EXPIRE_MINUTES
 from auth_user.models import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -36,6 +32,7 @@ def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme)): # 
     credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print("JWT payload:", payload)
         email = payload.get("sub")
         if not email:
             raise credentials_exception
@@ -60,3 +57,34 @@ def verify_password_reset_token(token: str):
         return payload.get("sub")
     except JWTError:
         return None
+    
+
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired. Please log in again.")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def get_current_admin(user: User = Depends(get_current_user)):
+    print(f"DEBUG: user={user.email}, role={user.role}")
+    if not user.role or user.role.lower() != "admin":
+        raise HTTPException(status_code=403, detail="Admins only")
+    return user
+
+def get_user_by_token(token: str, db: db_dependency):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+        user = db.query(User).filter(User.email == email).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")

@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import date
-
 class SalaryStructureCreate(BaseModel):
     employee_id : int
     basic : float
@@ -23,6 +22,8 @@ class PayrollOut(BaseModel):
     net_pay : float
     is_paid : bool
     payslip_path: Optional[str] = None
+
+
 
 
     

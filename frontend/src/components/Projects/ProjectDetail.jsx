@@ -142,8 +142,7 @@ export default function ProjectDetail() {
           <div className="bg-[#161B22] backdrop-blur-lg border border-white/20 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <span className="text-2xl text-[#3B82F6]"><TbBrandTeams />
-</span>
+                <span className="text-2xl text-[#3B82F6]"><TbBrandTeams /></span>
                 <h2 className="text-xl font-bold">
                   Team Members ({project.team_members?.length || 0})
                 </h2>

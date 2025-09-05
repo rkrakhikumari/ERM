@@ -6,17 +6,16 @@ from datetime import date
 class SalaryStructure(Base):
     __tablename__="salary_structures"
     id = Column(Integer, primary_key=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"))
     basic = Column(Float)
     hra = Column(Float)
     bonus = Column(Float, default = 0.0)
     deduction = Column(Float)
 
-
 class Payroll(Base):
     __tablename__ = "payroll"
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(Integer, ForeignKey("employees.id", ondelete="CASCADE"))
     month = Column(String)
     year = Column(Integer)
     generated_on = Column(Date,default=date.today)

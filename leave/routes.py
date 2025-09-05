@@ -6,6 +6,10 @@ from .schemas import LeaveApply, LeaveApprove, LeaveOut, LeaveStatus, LeaveType,
 from .utils import get_next_approver
 from typing import List
 from datetime import date
+from notification.routes import send_notification_direct
+import asyncio
+from auth_user.models import User
+from emply_mng.models import Employee
 from auth_user.utils import get_current_user
 from database import db_dependency
 
@@ -16,54 +20,183 @@ def apply_leave(req: LeaveApply, db:db_dependency, user=Depends(get_current_user
     employee = db.query(Employee).filter(Employee.email == user.email).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee record not found")
-    leave = LeaveRequest(employee_id = employee.id, start_date = req.start_date, end_date=req.end_date, leave_type=req.leave_type, reason=req.reason)
+    if user.role.lower() == "admin":
+        leave_status = "approved"
+        next_approver_role = None 
+    else:
+        leave_status = "pending"
+        next_approver_role = get_next_approver(user.role)
+
+    leave = LeaveRequest(
+        employee_id=employee.id, 
+        start_date=req.start_date,
+
+        end_date=req.end_date,
+        leave_type=req.leave_type,
+        reason=req.reason,
+        status=leave_status,
+        approver_level=next_approver_role,
+    )
     db.add(leave)
     db.commit()
-    return leave
+    db.refresh(leave)
+
+    return {
+        "id": leave.id,
+        "employee_id": leave.employee_id,
+        "employee_name": employee.name, 
+        "start_date": leave.start_date,
+        "end_date": leave.end_date,
+        "leave_type": leave.leave_type,
+        "reason": leave.reason,
+        "status": leave.status,
+        "approver_level": leave.approver_level
+    }
 
 @router.get('/me', response_model=List[LeaveOut])
 def my_leaves(db: db_dependency, user=Depends(get_current_user)):
     employee = db.query(Employee).filter(Employee.email == user.email).first()
     if not employee:
         raise HTTPException(status_code=404, detail="Employee record not found")
-    return db.query(LeaveRequest).filter(LeaveRequest.employee_id==employee.id).all()
+
+    my_leaves_with_names = db.query(LeaveRequest, Employee.name.label("employee_name")).join(
+    Employee, LeaveRequest.employee_id == Employee.id
+    ).filter(
+        LeaveRequest.employee_id == employee.id
+    ).all()
+
+    result_list = []
+    for leave_request, employee_name in my_leaves_with_names:
+        leave_data = leave_request.__dict__
+        leave_data['employee_name'] = employee_name
+        result_list.append(leave_data)
+
+    return result_list
 
 @router.get('/pending', response_model=list[LeaveOut])
-def pending_leaves(db: db_dependency, user= Depends(get_current_user)):
-    return db.query(LeaveRequest).filter(LeaveRequest.status=="pending", LeaveRequest.approver_level==user.role).all()
+def pending_leaves(db: db_dependency, user=Depends(get_current_user)):
+    base_query = db.query(LeaveRequest, Employee.name.label("employee_name")).join(
+    Employee, LeaveRequest.employee_id == Employee.id
+    )
 
+    if user.role.lower() == "admin":
+        pending_requests = base_query.filter(
+            LeaveRequest.status == "pending"
+    ).all()
+    else:
+        pending_requests = base_query.filter(
+        LeaveRequest.status == "pending",
+        LeaveRequest.approver_level == user.role
+        ).all()
+
+    result_list = []
+    for leave_request, employee_name in pending_requests:
+        leave_data = leave_request.__dict__
+        leave_data['employee_name'] = employee_name
+        result_list.append(leave_data)
+    return result_list
 
 @router.put('/approve/{leave_id}', response_model=LeaveOut)
-def approve_leave(leave_id: int, body: LeaveApprove, db: db_dependency, user = Depends(get_current_user)):
+def approve_leave(leave_id: int, body: LeaveApprove, db: db_dependency, user=Depends(get_current_user)):
     leave = db.query(LeaveRequest).filter(LeaveRequest.id == leave_id).first()
     if not leave:
-        raise HTTPException(status_code=404, detail="leave not found")
+        raise HTTPException(status_code=404, detail="Leave not found")
 
-    if leave.approver_level != user.role and user.role != "admin":
+    if leave.approver_level != user.role and user.role.lower() != "admin":
         raise HTTPException(status_code=403, detail="Not authorised")
-    
-    if body.status == "approved" and user.role != "admin":
-        leave.approver_level = get_next_approver(user.role)
-    else:
-        leave.status = body.status
+
+    # update status
+    if body.status.lower() == "approved":
+        if user.role.lower() == "admin":
+            leave.status = "approved"
+            leave.approver_level = None
+        else:
+            leave.approver_level = get_next_approver(user.role)
+            leave.status = "pending"
+    elif body.status.lower() == "rejected":
+        leave.status = "rejected"
+        leave.approver_level = None
 
     db.commit()
-    return leave
+    db.refresh(leave)
+
+    if leave.status in ["approved", "rejected"]:
+        employee = db.query(Employee).filter_by(id=leave.employee_id).first()
+        if employee:
+            user_rec = db.query(User).filter_by(email=employee.email).first()
+            if user_rec:
+                asyncio.run(send_notification_direct(
+                    user_id=user_rec.id,
+                    title="Leave Request Update",
+                    message=f"Your leave from {leave.start_date} to {leave.end_date} has been {leave.status.upper()}."
+                ))
+
+    employee = db.query(Employee).filter_by(id=leave.employee_id).first()
+    return {
+        "id": leave.id,
+        "employee_id": leave.employee_id,
+        "employee_name": employee.name if employee else None,
+        "start_date": leave.start_date,
+        "end_date": leave.end_date,
+        "leave_type": leave.leave_type,
+        "reason": leave.reason,
+        "status": leave.status,
+        "approver_level": leave.approver_level,
+    }
 
 
 @router.get('/calendar')
 def leave_calendar(db: db_dependency, user=Depends(get_current_user)):
     return db.query(LeaveRequest).filter(LeaveRequest.status=="approved").all()
 
+@router.get("/balance/me")
+def my_leave_balance(db: db_dependency, user=Depends(get_current_user)):
+    employee = db.query(Employee).filter(Employee.email == user.email).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    approved_leaves = db.query(LeaveRequest).filter(
+        LeaveRequest.employee_id == employee.id,
+        LeaveRequest.status == "approved"
+    ).all()
+
+    days_taken = sum((leave.end_date - leave.start_date).days + 1 for leave in approved_leaves)
+    total_allowance = 30
+    remaining_leaves = total_allowance - days_taken
+
+    return {
+        "employee_id": employee.id,
+        "leaves_taken": days_taken,
+        "remaining": remaining_leaves
+    }
 
 @router.get('/balance/{employee_id}')
 def leave_balance(employee_id: int, db: db_dependency):
-    total_leaves = db.query(LeaveRequest).filter(LeaveRequest.employee_id == employee_id, LeaveRequest.status == "approved").count()
-    return {"employee_id": employee_id, "leaves_taken": total_leaves, "remainings": 30-total_leaves}
+    employee = db.query(Employee).filter(Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    approved_leaves = db.query(LeaveRequest).filter(
+        LeaveRequest.employee_id == employee_id,
+        LeaveRequest.status == "approved"
+    ).all()
+
+    days_taken = 0
+    for leave in approved_leaves:
+        days_taken += (leave.end_date - leave.start_date).days + 1
+
+    total_allowance = 30
+    remaining_leaves = total_allowance - days_taken
+
+    return {
+        "employee_id": employee_id,
+        "leaves_taken": days_taken,
+        "remaining": remaining_leaves
+    }
     
 @router.post('/holiday', response_model=HolidayOut)
 def add_holiday(req: HolidayCreate, db: db_dependency, user= Depends(get_current_user)):
-    if user.role != "admin":
+    if user.role.lower() != "admin":
         raise HTTPException(status_code=403, detail="only admin can add holiday")
     holiday = Holiday(**req.model_dump())
     db.add(holiday)

@@ -13,7 +13,6 @@ export default function LeaveBalance({ refreshTrigger }) {
         setLoading(true);
         setError(null);
 
-        // ✅ backend already returns balance object
         const response = await api.get('/leaves/balance/me');
         const data = response.data;
 

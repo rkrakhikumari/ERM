@@ -3,7 +3,7 @@ from auth_user.schemas import *
 from auth_user.utils import get_hashed_password, verify_password, create_access_token, create_refresh_token,create_password_reset_token, verify_password_reset_token
 from auth_user.models import User
 from config import REFRESH_SECRET_KEY, ALGORITHM
-import jwt # type: ignore
+from jose import jwt
 from database import db_dependency
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -30,12 +30,12 @@ def login(user: UserLogin, db: db_dependency):  # type: ignore
     db_user = db.query(User).filter(User.email == user.email.strip()).first()
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    access_token = create_access_token({"sub": db_user.email})
-    refresh_token = create_refresh_token({"sub": db_user.email})
+    access_token = create_access_token({"sub": db_user.email, "role": db_user.role})
+    refresh_token = create_refresh_token({"sub": db_user.email, "role": db_user.role})
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 @router.post('/refresh', response_model=Token)
-def refresh_token(token: str):  # not protected by Depends intentionally
+def refresh_token(token: str):  
     if token in blacklist:
         raise HTTPException(status_code=401, detail="Token has been blacklisted")
     try:

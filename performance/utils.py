@@ -1,7 +1,6 @@
 from reportlab.pdfgen import canvas
 import os
 from .models import Goal, Feedback
-
 def generate_review_pdf(employee_id: int, goals: list[Goal], feedbacks: list[Feedback]) -> str:
     folder = "review_pdfs"
     os.makedirs(folder, exist_ok=True)

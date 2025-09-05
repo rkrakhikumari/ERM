@@ -77,14 +77,12 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Conditional rendering for the Update Profile Form (Modal) */}
       {isEditing && (
         <UpdateProfileForm
           onClose={() => setIsEditing(false)}
         />
       )}
 
-      {/* Conditional rendering for the Admin Dashboard section */}
       {user?.role === "Admin" && (
         <AdminDashboard />
       )}

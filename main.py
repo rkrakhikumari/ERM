@@ -13,12 +13,15 @@ from notification.routes import router as notif_router
 from admin.routes import router as admin_router
 from assets.routes import router as asset_router
 from performance.routes import router as performance_router
+from fastapi.staticfiles import StaticFiles # type: ignore
 
 app = FastAPI(title="ERM System")
 
+app.mount("/screenshots", StaticFiles(directory="screenshots"), name="screenshots")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  
+    allow_origins=["http://localhost:5173","http://127.0.0.1:5173"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

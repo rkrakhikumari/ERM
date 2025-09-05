@@ -50,7 +50,7 @@ const PayslipHistory = () => {
                 <div>
                     <label className="block text-sm font-medium text-gray-400">Employee ID</label>
                     <input 
-                        type="text" // Changed from "number" to "text"
+                        type="text" 
                         value={historyId} 
                         onChange={(e) => setHistoryId(e.target.value)} 
                         className="mt-1 block w-full bg-gray-800 text-white border-gray-700 rounded-md shadow-sm p-2 transition-colors duration-300 focus:border-yellow-400 focus:ring focus:ring-yellow-400/50" 

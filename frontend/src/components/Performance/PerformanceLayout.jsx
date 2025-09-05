@@ -56,8 +56,6 @@ const PerformanceLayout = () => {
           );
         })}
       </nav>
-
-      {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>

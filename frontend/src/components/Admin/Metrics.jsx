@@ -9,7 +9,7 @@ export default function Metrics() {
 
   useEffect(() => {
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 5000); // Fetch every 5 seconds
+    const interval = setInterval(fetchMetrics, 5000); 
     return () => clearInterval(interval);
   }, []);
 

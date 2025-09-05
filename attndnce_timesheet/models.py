@@ -5,7 +5,7 @@ from database import Base
 class Attendance(Base):
     __tablename__ = "attendance"
     id = Column(Integer, primary_key=True)
-    employee_id = Column(String, ForeignKey("users.id"))
+    employee_id = Column(Integer, ForeignKey("users.id",ondelete="CASCADE"))
     clock_in = Column(DateTime, nullable=True)
     clock_out = Column(DateTime, nullable= True)
     date = Column(DateTime, default=datetime.now(timezone.utc))
@@ -16,10 +16,11 @@ class Attendance(Base):
 class TimeSheet(Base):
     __tablename__ = "timesheets"
     id = Column(Integer, primary_key=True)
-    employee_id = Column(String, ForeignKey("users.id"))
+    employee_id = Column(Integer, ForeignKey("users.id",ondelete="CASCADE"))
     week_start = Column(DateTime)
     week_end = Column(DateTime)
     task_summary = Column(String)
     submitted_on = Column(DateTime, default=datetime.now(timezone.utc))
+    screenshot_path = Column(String, nullable=True)
 
 

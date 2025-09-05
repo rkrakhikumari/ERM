@@ -104,7 +104,7 @@ export default function Settings() {
         <button
           type="submit"
           disabled={isUpdating}
-          className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#3B82F6] rounded-md transition-colors duration-300 hover:bg-[#2563EB] disabled:bg-gray-500"
+          className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-[#3B82F6] rounded-md transition-colors duration-300 hover:bg-[#2563EB] disabled:bg-gray-500 cursor-pointer"
         >
           {isUpdating ? <FaSync className="animate-spin" /> : <FaSave />}
           {isUpdating ? "Saving..." : "Save Settings"}

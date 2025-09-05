@@ -1,5 +1,3 @@
-// Utility functions for leave management components
-
 export const formatDate = (dateString) => {
   if (!dateString) return 'Not set';
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -41,13 +39,13 @@ export const calculateLeaveDays = (startDate, endDate) => {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const timeDiff = end.getTime() - start.getTime();
-  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include both start and end date
+  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; 
   return daysDiff;
 };
 
 export const isWeekend = (date) => {
   const day = new Date(date).getDay();
-  return day === 0 || day === 6; // Sunday = 0, Saturday = 6
+  return day === 0 || day === 6; 
 };
 
 export const getLeaveTypeDisplay = (type) => {

@@ -1,18 +1,20 @@
-from sqlalchemy import Column, String, Integer, Text, DateTime, ForeignKey
-from sqlalchemy.sql import func
-from database import Base
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
+from database import Base 
 
 class GlobalSettings(Base):
     __tablename__ = "global_settings"
     id = Column(Integer, primary_key=True)
-    working_hours = Column(String, default = "9:00-18:00")
-    leave_policy = Column(Text)
-    access_control_policy = Column(Text)
+    working_hours = Column(String)
+    leave_policy = Column(String)
+    access_control_policy = Column(String)
 
 class AuditLog(Base):
-    __tablename__ = "audit_log"
+    __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True)
-    user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), index=True)
-    action = Column(String, index=True)
-    timestamp = Column(DateTime, default=func.now(), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    action = Column(String)
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+    user = relationship("User", back_populates="audit_logs")
