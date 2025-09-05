@@ -1,11 +1,10 @@
 from typing import Annotated
-from fastapi import Depends
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm import Session
+from fastapi import Depends  # type: ignore
+from sqlalchemy import create_engine # type: ignore
+from sqlalchemy.ext.declarative import declarative_base # type: ignore
+from sqlalchemy.orm import sessionmaker # type: ignore
+from sqlalchemy.orm import Session # type: ignore
 from config import DATABASE_URL
-
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine,autoflush=False, autocommit = False)
