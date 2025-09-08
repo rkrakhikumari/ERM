@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { MdGroups } from "react-icons/md";
+import { FaCheckCircle } from "react-icons/fa";
+
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -111,11 +113,11 @@ export default function TeamForm() {
 
   if (success) {
     return (
-      <div className="bg-black min-h-screen flex items-center justify-center font-sans text-white">
-        <div className="p-10 bg-gradient-to-br from-gray-900 to-gray-800 border border-green-500/30 rounded-2xl text-center shadow-2xl transition-all duration-500 animate-fadeIn">
-          <h2 className="text-2xl font-bold text-green-400 drop-shadow-neon">Team Created Successfully!</h2>
-          <p className="mt-2 text-gray-400">Redirecting to teams list...</p>
-        </div>
+      <div className="bg-[#161B22] backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20 max-w-md mx-auto mt-8 text-center animate-fade-in-up">
+              <FaCheckCircle className="text-[#3B82F6] mx-auto mb-4 w-12 h-12" />
+              <h2 className="text-xl font-bold text-white mb-2">
+                Team Created Successfully!
+              </h2>
       </div>
     );
   }

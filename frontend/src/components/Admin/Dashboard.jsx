@@ -37,6 +37,11 @@ export default function Dashboard() {
   const adminNavButtons = [
     { title: "Global Settings", to: "/admin/settings", icon: <FaCog /> },
     { title: "Health Metrics", to: "/admin/metrics", icon: <FaHeartbeat /> },
+    { title: "Audit Logs", to: "/admin/logs", icon: <FaHistory /> },
+    { title: "Immpersonate User", to: "/admin/impersonate", icon: <FaHistory /> },
+
+
+
   ];
 
   if (loading) return <div className="text-white text-center">Loading dashboard...</div>;

@@ -4,7 +4,8 @@ from database import db_dependency
 from auth_user.utils import get_current_user 
 from .schemas import DashboardStats, GlobalSettingsResponse, GlobalSettingsUpdate, AuditLogResponse, HealthMetrics
 from .crud import get_dashboard_stats, get_global_settings, update_global_settings, get_audit_logs, create_audit_log, check_db_health
-from auth_user.models import User  
+from auth_user.models import User 
+from auth_user.utils import create_access_token 
 import time
 from typing import List
 
@@ -44,9 +45,27 @@ def get_logs(db: db_dependency, user: User = Depends(get_current_admin_user)):
 
 @router.post("/impersonate/{user_id}")
 def impersonate_user(user_id: int, db: db_dependency, user: User = Depends(get_current_admin_user)):
-    create_audit_log(db, user_id=user.id, action=f"Impersonated user with ID: {user_id}")
-    return {"message": f"Impersonating user {user_id}. A new JWT token would be generated here."}
+    impersonated_user = db.query(User).filter(User.id == user_id).first()
+    if not impersonated_user:
+        raise HTTPException(status_code=404, detail=f"User with ID {user_id} not found.")
 
+    create_audit_log(db, user_id=user.id, action=f"Impersonated user with ID: {impersonated_user.id} ({impersonated_user.email})")
+
+    impersonation_payload = {
+        "sub": str(impersonated_user.id),
+        "username": impersonated_user.username,
+        "email": impersonated_user.email,
+        "role": impersonated_user.role,
+        "impersonator_id": user.id  
+    }
+    
+    new_token = create_access_token(impersonation_payload)
+
+    return {
+        "message": f"Successfully impersonated user {impersonated_user.username}. Redirecting...",
+        "access_token": new_token,
+        "token_type": "bearer"
+    }
 @router.get("/metrics", response_model=HealthMetrics)
 def get_metrics(db: db_dependency, user: User = Depends(get_current_admin_user)):
     uptime = time.time() - start_time

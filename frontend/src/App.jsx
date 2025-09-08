@@ -43,6 +43,7 @@ import AssetRequestForm from "./components/Assets/AssetRequestForm";
 import EmployeeAssets from "./components/Assets/EmployeeAssets";
 import AssetForm from "./components/Assets/AssetForm"; 
 import AssetRequestsList from "./components/Assets/AssetRequestsList";
+import AssetAuditLogs from './components/Assets/AssetAuditLogs'
 
 import PerformanceLayout from "./components/Performance/PerformanceLayout";
 import CreateReviewCycle from "./components/Performance/CreateReviewCycle";
@@ -57,6 +58,9 @@ import NotificationList from './components/Notification/NotificationList';
 import Dashboard from "./components/Admin/Dashboard";
 import Settings from "./components/Admin/Settings";
 import Metrics from "./components/Admin/Metrics";
+import AuditLogs from "./components/Admin/AuditLogs";
+import ImpersonateUser from './components/Admin/ImpersonateUser'
+
 function EmployeesLayout() {
   return (
     <div className="">
@@ -95,6 +99,11 @@ function App() {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/settings" element={<Settings />} />
         <Route path="/admin/metrics" element={<Metrics />} />
+        <Route path="/admin/logs" element={<AuditLogs />} />
+        <Route path="/admin/impersonate" element={<ImpersonateUser/>}  />
+
+
+
 
         <Route path="/profile" element={<Profile />} />
 
@@ -105,6 +114,8 @@ function App() {
           <Route path="requests" element={<AssetRequestsList/>} />
           <Route path=":employeeId" element={<EmployeeAssets />} />
           <Route path="request" element={<AssetRequestForm />} />
+          <Route path="audit-logs" element={<AssetAuditLogs />} />
+
         </Route>
 
         <Route path="/payroll" element={<PayrollLayout />}>

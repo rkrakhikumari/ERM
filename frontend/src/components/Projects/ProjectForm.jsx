@@ -77,12 +77,11 @@ export default function ProjectForm() {
 
   if (success) {
     return (
-      <div className="bg-gray-800/50 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-700 max-w-md mx-auto mt-8 text-center animate-fade-in-up">
-        <FaCheckCircle className="text-green-400 mx-auto mb-4 w-12 h-12" />
-        <h2 className="text-xl font-bold text-black-400 mb-2">
+      <div className="bg-[#161B22] backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20 max-w-md mx-auto mt-8 text-center animate-fade-in-up">
+        <FaCheckCircle className="text-[#3B82F6] mx-auto mb-4 w-12 h-12" />
+        <h2 className="text-xl font-bold text-white mb-2">
           Project Created Successfully!
         </h2>
-        <p className="text-gray-400 text-sm">Redirecting to projects list...</p>
       </div>
     );
   }

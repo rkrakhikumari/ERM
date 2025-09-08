@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session # type: ignore
 from .models import GlobalSettings, AuditLog
 from datetime import datetime, timezone
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError # type: ignore
+from sqlalchemy import text # type: ignore
 
 def get_global_settings(db: Session):
     settings = db.query(GlobalSettings).first()
@@ -34,6 +34,7 @@ def create_audit_log(db: Session, user_id: int, action: str):
     db.add(log)
     db.commit()
     db.refresh(log)
+    print("Audit log committed successfully.")
 
 def get_dashboard_stats(db: Session):
     employee_count = db.execute(text("SELECT COUNT(*) FROM employees")).scalar()

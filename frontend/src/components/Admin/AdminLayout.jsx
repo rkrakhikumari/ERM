@@ -6,6 +6,11 @@ export default function AdminLayout() {
     { to: "dashboard", icon: <FaTachometerAlt />, text: "Dashboard" },
     { to: "settings", icon: <FaCog />, text: "Settings" },
     { to: "metrics", icon: <FaHeartbeat />, text: "Health Metrics" },
+    { to: "logs", icon: <FaHistory />, text: "Audit Logs" },
+    { to: "impersonate", icon: <FaUserShield />, text: "Impersonate" }
+
+    
+    
   ];
 
   return (
