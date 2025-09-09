@@ -102,12 +102,6 @@ export default function AssetList() {
           className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-[#3B82F6] text-white hover:bg-[#2563EB] transition-all hover:-translate-y-1 shadow-md cursor-pointer">
           <GoPlusCircle className="text-lg" /> Create New Asset
           </Link>
-          <Link
-          to="/assets/audit-logs"
-          className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold bg-[#3B82F6] text-white hover:bg-[#2563EB] transition-all hover:-translate-y-1 shadow-md cursor-pointer"
-        >
-          <MdAssignmentTurnedIn className="text-lg" /> View Logs
-        </Link>
         </div>
       </div>
 

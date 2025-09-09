@@ -1,10 +1,11 @@
 from celery import Celery
 import os
+import config
 
 celery_app = Celery(
     "notifications",
-    broker=os.getenv("CELERY_BROKER_URL", "redis://redis:6379/0"),
-    backend=os.getenv("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
+    broker=config.CELERY_BROKER_URL,
+    backend=config.CELERY_RESULT_BACKEND
 )
 
 celery_app.autodiscover_tasks(["notification"])

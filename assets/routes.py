@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from notification.routes import send_notification_direct
 from database import db_dependency
-from .models import Assets, AssetRequest
+from .models import Assets, AssetRequest, AssetAuditLog
 from .schemas import AssetBase, AssetCreate, AssetOut, AssetRequestCreate, AssetRequestOut, AssetAssign, ReturnAssetRequest
 from datetime import datetime, timezone
 import asyncio
@@ -59,7 +59,7 @@ def allocate_asset(data: AssetAssign, db: db_dependency, user: User = Depends(ge
     db.commit()
     db.refresh(asset)
 
-    create_audit_log(db,user_id=user.id,action=f"Asset '{asset.name}' (ID: {asset.id}) allocated to employee '{employee_to_assign.full_name}' ({employee_to_assign.id}).")
+    create_audit_log(db,user_id=user.id,action=f"Asset '{asset.name}' (ID: {asset.id}) allocated to employee '{employee_to_assign.name}' ({employee_to_assign.id}).")
 
     if employee_to_assign:
         employee_user = db.query(User).filter_by(email=employee_to_assign.email).first()
