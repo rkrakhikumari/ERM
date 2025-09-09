@@ -11,7 +11,7 @@ from admin.crud import create_audit_log
 router = APIRouter(prefix="/teams", tags=["Teams"])
 
 @router.get('/', response_model=List[TeamOut])
-def get_teams(db: db_dependency): # type: ignore
+def get_teams(db: db_dependency): 
     return list_teams(db)
 
 @router.post("/", response_model=TeamOut)

@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaCheckCircle } from "react-icons/fa";
 import { MdGroups } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa";
-
-
-const API_BASE_URL = "http://localhost:8000";
+import api from "../../api/api"
 
 export default function TeamForm() {
   const [form, setForm] = useState({
@@ -25,12 +22,8 @@ export default function TeamForm() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/employees`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setEmployees(data);
+      const response = await api.get("/employees");
+      setEmployees(response.data);
     } catch (err) {
       console.error("Error fetching employees:", err);
       setError("Failed to load employees from the server.");
@@ -47,9 +40,7 @@ export default function TeamForm() {
     const { options } = e.target;
     const value = [];
     for (let i = 0; i < options.length; i++) {
-      if (options[i].selected) {
-        value.push(options[i].value);
-      }
+      if (options[i].selected) value.push(options[i].value);
     }
     setForm({ ...form, member_ids: value });
   };
@@ -68,7 +59,6 @@ export default function TeamForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setError(null);
@@ -76,48 +66,36 @@ export default function TeamForm() {
     const payload = {
       name: form.name.trim(),
       manager_id: parseInt(form.manager_id),
-      member_ids: form.member_ids.map(id => parseInt(id))
+      member_ids: form.member_ids.map((id) => parseInt(id))
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/teams`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Team created successfully:", result);
-
+      const response = await api.post("/teams/", payload);
+      console.log("Team created successfully:", response.data);
       setSuccess(true);
-      setTimeout(() => {
-        navigate("/teams");
-      }, 1500);
+      setTimeout(() => navigate("/teams/"), 1500);
     } catch (err) {
       console.error("Error creating team:", err);
-      setError(`Failed to create team: ${err.message}. Please try again.`);
+      setError(
+        `Failed to create team: ${
+          err.response?.data?.detail || err.message
+        }. Please try again.`
+      );
     }
   };
 
   const getEmployeeName = (employeeId) => {
-    const employee = employees.find(emp => emp.id === parseInt(employeeId));
+    const employee = employees.find((emp) => emp.id === parseInt(employeeId));
     return employee ? employee.name : `Employee ${employeeId}`;
   };
 
   if (success) {
     return (
       <div className="bg-[#161B22] backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-white/20 max-w-md mx-auto mt-8 text-center animate-fade-in-up">
-              <FaCheckCircle className="text-[#3B82F6] mx-auto mb-4 w-12 h-12" />
-              <h2 className="text-xl font-bold text-white mb-2">
-                Team Created Successfully!
-              </h2>
+        <FaCheckCircle className="text-[#3B82F6] mx-auto mb-4 w-12 h-12" />
+        <h2 className="text-xl font-bold text-white mb-2">
+          Team Created Successfully!
+        </h2>
       </div>
     );
   }
@@ -182,7 +160,9 @@ export default function TeamForm() {
                   className="w-full pl-12 pr-10 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6] transition-colors duration-300 appearance-none cursor-pointer"
                   required
                 >
-                  <option value="" className="bg-gray-800 text-gray-400">Select an administrator</option>
+                  <option value="" className="bg-gray-800 text-gray-400">
+                    Select an administrator
+                  </option>
                   {employees.map((employee) => (
                     <option key={employee.id} value={employee.id} className="bg-gray-800 text-white">
                       {employee.name} (ID: {employee.id})
@@ -206,7 +186,7 @@ export default function TeamForm() {
                 className="w-full pl-4 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-[#3B82F6] transition-colors duration-300 cursor-pointer h-40 overflow-y-auto"
               >
                 {employees
-                  .filter(employee => employee.id !== parseInt(form.manager_id))
+                  .filter((employee) => employee.id !== parseInt(form.manager_id))
                   .map((employee) => (
                     <option key={employee.id} value={employee.id} className="bg-gray-800 text-white">
                       {employee.name} (ID: {employee.id})
@@ -227,7 +207,7 @@ export default function TeamForm() {
             <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-700/50">
               <button
                 type="button"
-                onClick={() => navigate("/teams")}
+                onClick={() => navigate("/teams/")}
                 className="px-6 py-2 text-gray-400 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer hover:translate-y-1"
               >
                 Cancel

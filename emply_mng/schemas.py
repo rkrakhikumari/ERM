@@ -33,10 +33,16 @@ class EmployeeUpdate(BaseModel):
 class EmployeeOut(EmployeeBase):
     id : int
 
+    class Config:
+        orm_mode = True
+
 class HistoryOut(BaseModel):
     id: int
     action : str
     from_value : str
     to_value : str
     date: date
+
+    class Config:
+        orm_mode = True
 

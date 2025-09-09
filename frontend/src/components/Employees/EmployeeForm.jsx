@@ -104,7 +104,7 @@ export default function EmployeeForm() {
         await createEmployee(payload);
         showMessage("Employee created successfully", "success");
       }
-      setTimeout(() => navigate("/employees"), 1500);
+      setTimeout(() => navigate("/employees/"), 1500);
     } catch (error) {
       console.error("Form submission failed:", error?.response?.data || error);
       setError("Failed to submit form. Check console for details.");

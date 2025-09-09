@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database import SessionLocal, db_dependency
@@ -11,22 +11,16 @@ from .utils import create_employee, get_all_employees, get_employees, update_emp
 
 router = APIRouter(prefix="/employees", tags=["Employees"])
 
-@router.post("/", response_model=EmployeeOut)
-def add_employee(data: EmployeeCreate, db: db_dependency):
+@router.post("/", response_model=EmployeeOut, status_code=status.HTTP_201_CREATED)
+def add_employee(data: EmployeeCreate, db: db_dependency, user: User = Depends(get_current_user)):
     employee = create_employee(db, data)
     create_audit_log(
         db,
         user_id=user.id,
-        action=f"Added a new employee: {employee.full_name} ({employee.id})."
-    )
-
-    admin_id = 3 
-    trigger_notification.delay(
-        user_id=admin_id,
-        title="New Employee Added",
-        message=f"{employee.name} has been added to employees"
+        action=f"Added a new employee: {employee.name} ({employee.id})."
     )
     return employee
+
 
 @router.get("/", response_model=List[EmployeeOut])
 def list_employees(db: db_dependency, department: Optional[str]=None, status: Optional[str]=None):

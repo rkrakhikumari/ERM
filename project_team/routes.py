@@ -19,12 +19,10 @@ def create_new_project(data: ProjectCreate, db: db_dependency, user: User = Depe
 
 @router.get("/", response_model=List[ProjectOut])
 def get_all_projects(db: db_dependency):
-    # Read-only endpoint, no audit log needed.
     return list_projects(db)
 
 @router.get("/{project_id}", response_model=ProjectOut)
 def get_project_detail(project_id: int, db: db_dependency):
-    # Read-only endpoint, no audit log needed.
     project = get_project(db, project_id)
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
@@ -90,12 +88,10 @@ def remove_project_assignment(project_id: int, request: RemoveAssignmentRequest,
 
 @router.get("/{project_id}/tasks", response_model=List[TaskOut])
 def get_tasks(project_id: int, db: db_dependency):
-    # Read-only endpoint, no audit log needed.
     return list_tasks(db, project_id)
 
 @router.get("/tasks/{task_id}", response_model=TaskOut)
 def get_task(task_id: int, db: db_dependency):
-    # Read-only endpoint, no audit log needed.
     task = get_task_by_id(db, task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
